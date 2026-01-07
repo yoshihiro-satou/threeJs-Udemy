@@ -1,7 +1,7 @@
 import * as THREE from "./build/three.module.js";
 import { OrbitControls } from "./controls/OrbitControls.js";
 
-let scene, camera, renderer, pointLight, controls;
+let scene, camera, renderer, pointLight, controls, sphere, plane, octahedron;
 
 window.addEventListener("load", init);
 
@@ -28,6 +28,53 @@ function init() {
    * マテリアルセクション
    */
 
+  // ジオメトリ
+  const sphereGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+  const planeGeometry =new THREE.PlaneGeometry(1, 1);
+  const octahedronGeometry = new THREE.OctahedronGeometry(0.5);
+
+  // テクスチャ
+  const texture = new THREE.TextureLoader().load('./textures/brick.jpg');
+  // マテリアル
+  // const material = new THREE.MeshBasicMaterial();
+  // material.map = texture;
+  // material.color = new THREE.Color("red");
+  // material.wireframe = true;
+  // material.side = THREE.DoubleSide;
+  // material.opacity = 0.5
+  // material.transparent = true //opacityをかけるとき
+
+  // const material = new THREE.MeshNormalMaterial()
+  // material.flatShading = true;
+
+  // const material = new THREE.MeshStandardMaterial();
+  // // material.color.set("#049ef4");
+  // material.roughness = 0.34;
+  // material.metalness = 0.64;
+  // material.map = texture;
+  const material = new THREE.MeshPhongMaterial();
+  material.shininess = 1000;
+  material.specular = new THREE.Color("red")
+  // 明かりを追加してみよう
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+  scene.add(ambientLight);
+
+  const pointLight = new THREE.PointLight(0xffffff, 0.3);
+  pointLight.position.set(1, 2, 3);
+  scene.add(pointLight)
+
+  const pointLightHelper = new THREE.PointLightHelper(pointLight, 1);
+scene.add(pointLightHelper)
+
+  // メッシュ化
+  sphere = new THREE.Mesh(sphereGeometry, material);
+  plane = new THREE.Mesh(planeGeometry, material);
+  octahedron = new THREE.Mesh(octahedronGeometry, material);
+
+  sphere.position.x = -1.5;
+  octahedron.position.x = 1.5;
+
+  scene.add(sphere, plane, octahedron);
   //マウス操作
   const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -35,8 +82,20 @@ function init() {
 
   animate();
 }
+const clock = new THREE.Clock();
 
 function animate() {
+  const elapsedTime = clock.getElapsedTime();
+// オブジェクトを回転させる
+sphere.rotation.x= elapsedTime;
+plane.rotation.x= elapsedTime;
+octahedron.rotation.x= elapsedTime;
+
+sphere.rotation.y = elapsedTime;
+plane.rotation.y = elapsedTime;
+octahedron.rotation.y = elapsedTime;
+
+
   //レンダリング
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
