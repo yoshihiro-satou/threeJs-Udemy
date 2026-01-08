@@ -1,6 +1,6 @@
 import * as THREE from "./build/three.module.js";
 import { OrbitControls } from "./controls/OrbitControls.js";
-
+import { RectAreaLightHelper } from "./helpers/RectAreaLightHelper.js";
 //UIデバッグ
 const gui = new dat.GUI();
 
@@ -29,16 +29,53 @@ scene.add(camera);
 const ambientLight = new THREE.AmbientLight();
 ambientLight.color = new THREE.Color(0xffffff);
 ambientLight.intensity = 0.5;
-// scene.add(ambientLight);
+scene.add(ambientLight);
 gui.add(ambientLight, "intensity").min(0).max(1).step(0.001);
 
 const directionalLight =  new THREE.DirectionalLight(0xffffff, 0.5);
 // directionalLight.position.set(1, 0.55, 5);
-// scene.add(directionalLight);
+scene.add(directionalLight);
 
-const hemiSphereLight = new THREE.HemisphereLight(0x0ffff0, 0xffff00, 1);
+const hemiSphereLight = new THREE.HemisphereLight(0x0ffff0, 0xffff00, 0.5);
 hemiSphereLight.position.set(1, 0.55, 0);
-scene.add(hemiSphereLight)
+scene.add(hemiSphereLight);
+
+const pointLight = new THREE.PointLight(0xff4000, 0.4, 10, 2);
+pointLight.position.set(1.5, 0, 1.5);
+scene.add(pointLight);
+
+const rectAriaLight = new THREE.RectAreaLight(0x4eff00, 1, 1, 2);
+rectAriaLight.position.set(1.5, 0, 1.5);
+rectAriaLight.lookAt(0, 0, 0);
+// scene.add(rectAriaLight);
+
+const spotLight = new THREE.SpotLight(0xffffff, 0.5, 6, Math.PI * 0.1, 0.1, 1);
+spotLight.position.set(0, 2, 3);
+scene.add(spotLight);
+
+console.log(spotLight.target);
+spotLight.target.position.x = -1.5;
+scene.add(spotLight.target);
+
+// Helper
+const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.3);
+scene.add(directionalLightHelper);
+
+const hemiSphereLightHelper = new THREE.HemisphereLightHelper(hemiSphereLight, 0.3);
+scene.add(hemiSphereLightHelper);
+
+const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.3);
+scene.add(pointLightHelper);
+
+const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+scene.add(spotLightHelper);
+window.requestAnimationFrame(() => {
+  spotLightHelper.update();
+})
+
+const rectAriaLightHelper = new RectAreaLightHelper(rectAriaLight);
+scene.add(rectAriaLightHelper)
+
 //マテリアル
 const material = new THREE.MeshStandardMaterial();
 material.roughness = 0.3;
