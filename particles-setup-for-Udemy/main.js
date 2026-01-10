@@ -34,24 +34,31 @@ document.body.appendChild(renderer.domElement);
  */
 
 const textureLoader = new THREE.TextureLoader();
-const particlesTexture = textureLoader.load("./textures/particles/1.png");
+const particlesTexture = textureLoader.load("./textures/particles/9.png");
 
 
 /* パーティクルを作ってみよう
  */
 // ジオメトリ
 const particlesGeometry = new THREE.BufferGeometry();
-const count = 5000;
+const count = 10000;
 
 const positionArray = new Float32Array(count * 3);
 // console.log(positionArray);
+
+const colorArray = new Float32Array(count * 3);
 for(let i = 0; i < count * 3; i++) {
   positionArray[i] = (Math.random() - 0.5) * 10;
+  colorArray[i] = Math.random()
 }
 
 particlesGeometry.setAttribute(
   "position",
   new THREE.BufferAttribute(positionArray, 3)
+);
+particlesGeometry.setAttribute(
+  "color",
+  new THREE.BufferAttribute(colorArray, 3)
 );
 // 球を制作してみる
 const cube = new THREE.Mesh(
@@ -67,12 +74,15 @@ const pointMaterial = new THREE.PointsMaterial({
   // alphaTest: 0.001,
   // depthTest: false,
   depthWrite: false,
+  vertexColors: true,
+  blending: THREE.AdditiveBlending
 });
 // pointMaterial.map = particlesTexture;
+// pointMaterial.color.set("green");
 
 // メッシュ化
 const particles = new THREE.Points(particlesGeometry, pointMaterial);
-scene.add(particles, cube);
+scene.add(particles);
 
 //マウス操作
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -80,6 +90,7 @@ controls.enableDamping = true;
 
 window.addEventListener("resize", onWindowResize);
 
+// console.log(particlesGeometry.attributes.position);
 const clock = new THREE.Clock();
 
 function animate() {
@@ -87,6 +98,14 @@ function animate() {
 
   controls.update();
 
+  for(let i = 0; i < count; i++) {
+    const i3 = i * 3;
+    const x = particlesGeometry.attributes.position.array[i3 + 0];
+    particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(
+      elapsedTime + x);
+  }
+
+  particlesGeometry.attributes.position.needsUpdate = true;
   //レンダリング
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
