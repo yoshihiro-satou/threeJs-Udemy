@@ -72,10 +72,41 @@ animationScript.push({
   }
 });
 
+animationScript.push({
+  start: 40,
+  end: 60,
+  function() {
+    camera.lookAt(box.position);
+    camera.position.set(0, 1, 10);
+    box.rotation.z = lerp(1, Math.PI, scalePersent(40, 60));
+  }
+});
+
+animationScript.push({
+  start: 60,
+  end: 80,
+  function() {
+    camera.lookAt(box.position);
+    camera.position.x = lerp(0, -15, scalePersent(60, 80));
+    camera.position.y = lerp(1, 15, scalePersent(60, 80));
+    camera.position.z = lerp(10, 25, scalePersent(60, 80));
+  }
+});
+
+animationScript.push({
+  start: 80,
+  end: 100,
+  function() {
+    camera.lookAt(box.position);
+    box.rotation.x += 0.02;
+    box.rotation.y += 0.02;
+  }
+});
+
 // アニメーションを開始
 function playScrollAnimation() {
   animationScript.forEach((animation) => {
-    if(scrollParcent >= animation.start && scrollParcent < animation.end)
+    if(scrollParcent >= animation.start && scrollParcent <= animation.end)
     animation.function();
   } )
 };
